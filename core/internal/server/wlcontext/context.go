@@ -2,10 +2,9 @@ package wlcontext
 
 import (
 	"fmt"
-	"golang.org/x/sys/unix"
-	"os"
 	"sync"
-	"time"
+
+	"golang.org/x/sys/unix"
 
 	"github.com/AvengeMedia/DankMaterialShell/core/internal/errdefs"
 	"github.com/AvengeMedia/DankMaterialShell/core/internal/log"
@@ -123,9 +122,6 @@ func (sc *SharedContext) eventDispatcher() {
 		{Fd: int32(sc.wakeR), Events: unix.POLLIN},
 	}
 
-	consecutiveErrors := 0
-	const maxConsecutiveErrors = 20
-
 	for {
 		sc.drainCmdQueue()
 
@@ -151,24 +147,12 @@ func (sc *SharedContext) eventDispatcher() {
 			}
 		}
 
-		if pollFds[0].Revents&unix.POLLIN == 0 {
-			continue
-		}
-
-		if err := ctx.Dispatch(); err != nil && !os.IsTimeout(err) {
-			consecutiveErrors++
-			log.Warnf("Wayland connection error (%d/%d): %v", consecutiveErrors, maxConsecutiveErrors, err)
-
-			if consecutiveErrors >= maxConsecutiveErrors {
-				log.Errorf("Fatal: Wayland connection unrecoverable after %d attempts. Exiting dispatcher.", maxConsecutiveErrors)
+		if pollFds[0].Revents&unix.POLLIN != 0 {
+			if err := ctx.Dispatch(); err != nil {
+				log.Errorf("Wayland dispatch error: %v", err)
 				return
 			}
-
-			time.Sleep(100 * time.Millisecond * time.Duration(consecutiveErrors))
-			continue
 		}
-
-		consecutiveErrors = 0
 	}
 }
 
