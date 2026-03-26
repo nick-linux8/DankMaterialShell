@@ -47,8 +47,8 @@ Singleton {
         const hasExtWorkspace = DMSService.capabilities.includes("extworkspace");
         if (hasExtWorkspace && !extWorkspaceAvailable) {
             if (typeof CompositorService !== "undefined") {
-                const useExtWorkspace = DMSService.forceExtWorkspace || (!CompositorService.isNiri && !CompositorService.isHyprland && !(CompositorService.isDwl && DwlService.dwlAvailable) && !CompositorService.isSway && !CompositorService.isScroll && !CompositorService.isMiracle);
-                if (!useExtWorkspace) {
+                const useExtWorkspace = DMSService.forceExtWorkspace || (!CompositorService.isNiri && !CompositorService.isHyprland && !CompositorService.isSway && !CompositorService.isScroll && !CompositorService.isMiracle);                
+		if (!useExtWorkspace) {
                     console.info("ExtWorkspaceService: ext-workspace available but compositor has native support");
                     extWorkspaceAvailable = false;
                     return;

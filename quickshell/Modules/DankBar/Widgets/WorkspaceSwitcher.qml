@@ -45,7 +45,7 @@ Item {
         }
     }
 
-    readonly property bool useExtWorkspace: DMSService.forceExtWorkspace || (!CompositorService.isNiri && !CompositorService.isHyprland && !(CompositorService.isDwl && DwlService.dwlAvailable) && !CompositorService.isSway && !CompositorService.isScroll && !CompositorService.isMiracle && ExtWorkspaceService.extWorkspaceAvailable)
+    readonly property bool useExtWorkspace: DMSService.forceExtWorkspace || (!CompositorService.isNiri && !CompositorService.isHyprland && !CompositorService.isSway && !CompositorService.isScroll && !CompositorService.isMiracle);
 
     Connections {
         target: DesktopEntries
