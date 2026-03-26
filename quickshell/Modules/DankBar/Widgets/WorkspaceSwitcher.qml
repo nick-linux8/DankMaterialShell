@@ -44,6 +44,7 @@ Item {
             return root.screenName;
         }
     }
+    readonly property bool isMango: CompositorService.isDwl && ExtWorkspaceService.extWorkspaceAvailable;
 
     readonly property bool useExtWorkspace: DMSService.forceExtWorkspace || (!CompositorService.isNiri && !CompositorService.isHyprland && !CompositorService.isSway && !CompositorService.isScroll && !CompositorService.isMiracle);
 
@@ -207,7 +208,7 @@ Item {
 
     function getWorkspaceIcons(ws) {
         _desktopEntriesUpdateTrigger;
-        if (!SettingsData.showWorkspaceApps || !ws) {
+        if (!SettingsData.showWorkspaceApps || !ws || root.isMango) {
             return [];
         }
 
