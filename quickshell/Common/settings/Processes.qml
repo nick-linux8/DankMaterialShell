@@ -70,14 +70,12 @@ Singleton {
             fingerprintProbeState = forcedFprintAvailable ? "ready" : "probe_failed";
         }
 
-        if (forcedFprintAvailable === null || forcedU2fAvailable === null) {
-            pamFprintSupportDetected = false;
-            pamU2fSupportDetected = false;
-            pamSupportProbeOutput = "";
-            pamSupportProbeStreamFinished = false;
-            pamSupportProbeExited = false;
-            pamSupportDetectionProcess.running = true;
-        }
+        pamFprintSupportDetected = false;
+        pamU2fSupportDetected = false;
+        pamSupportProbeOutput = "";
+        pamSupportProbeStreamFinished = false;
+        pamSupportProbeExited = false;
+        pamSupportDetectionProcess.running = true;
 
         recomputeAuthCapabilities();
     }

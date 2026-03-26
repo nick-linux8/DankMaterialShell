@@ -34,14 +34,14 @@ Scope {
         u2fPendingTimeout.running = false;
         passwdActiveTimeout.running = false;
         unlockRequestTimeout.running = false;
-        u2fPending = false;
-        u2fState = "";
-        unlockInProgress = false;
+        root.u2fPending = false;
+        root.u2fState = "";
+        root.unlockInProgress = false;
     }
 
     function recoverFromAuthStall(newState: string): void {
         resetAuthFlows();
-        state = newState;
+        root.state = newState;
         flashMsg();
         stateReset.restart();
         fprint.checkAvail();
@@ -49,16 +49,16 @@ Scope {
     }
 
     function completeUnlock(): void {
-        if (!unlockInProgress) {
-            unlockInProgress = true;
+        if (!root.unlockInProgress) {
+            root.unlockInProgress = true;
             passwd.abort();
             fprint.abort();
             u2f.abort();
             errorRetry.running = false;
             u2fErrorRetry.running = false;
             u2fPendingTimeout.running = false;
-            u2fPending = false;
-            u2fState = "";
+            root.u2fPending = false;
+            root.u2fState = "";
             unlockRequestTimeout.restart();
             unlockRequested();
         }
@@ -73,13 +73,13 @@ Scope {
     }
 
     function cancelU2fPending(): void {
-        if (!u2fPending)
+        if (!root.u2fPending)
             return;
         u2f.abort();
         u2fErrorRetry.running = false;
         u2fPendingTimeout.running = false;
-        u2fPending = false;
-        u2fState = "";
+        root.u2fPending = false;
+        root.u2fState = "";
         fprint.checkAvail();
     }
 
@@ -108,13 +108,16 @@ Scope {
         id: passwd
 
         config: dankshellConfigWatcher.loaded ? "dankshell" : "login"
-        configDirectory: dankshellConfigWatcher.loaded || loginConfigWatcher.loaded ? "/etc/pam.d" : Quickshell.shellDir + "/assets/pam"
+        configDirectory: (dankshellConfigWatcher.loaded || loginConfigWatcher.loaded) ? "/etc/pam.d" : Quickshell.shellDir + "/assets/pam"
 
         onMessageChanged: {
-            if (message.startsWith("The account is locked"))
+            if (message.startsWith("The account is locked")) {
                 root.lockMessage = message;
-            else if (root.lockMessage && message.endsWith(" left to unlock)"))
+            } else if (root.lockMessage && message.endsWith(" left to unlock)")) {
                 root.lockMessage += "\n" + message;
+            } else if (root.lockMessage && message && message.length > 0) {
+                root.lockMessage = "";
+            }
         }
 
         onResponseRequiredChanged: {
@@ -252,7 +255,7 @@ Scope {
         configDirectory: u2fConfigWatcher.loaded ? "/etc/pam.d" : Quickshell.shellDir + "/assets/pam"
 
         onMessageChanged: {
-            if (message !== "")
+            if (message.toLowerCase().includes("touch"))
                 root.u2fState = "waiting";
         }
 
